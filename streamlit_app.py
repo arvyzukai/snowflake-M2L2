@@ -139,15 +139,34 @@ st.subheader("Carrier Sentiment Score vs Others by Region")
 # Calculate mean sentiment for each carrier and region
 carrier_region_means = filtered_df.groupby(['CARRIER', 'REGION'])['SENTIMENT_SCORE'].mean()
 
-# Calculate the difference for each carrier vs all others within each region
+# --- Carrier Performance vs Others by Region ---
+st.subheader("Carrier Sentiment Score vs Others by Region")
+
+# Calculate the difference for each carrier-region vs all others
 carrier_region_diff = []
+
 for region in filtered_df['REGION'].unique():
-    region_data = carrier_region_means.xs(region, level='REGION')
-    
-    for carrier in region_data.index:
-        carrier_score = region_data[carrier]
-        others_score = region_data[region_data.index != carrier].mean()
+    for carrier in filtered_df['CARRIER'].unique():
+        # Get sentiment scores for this carrier in this region
+        carrier_region_data = filtered_df[
+            (filtered_df['CARRIER'] == carrier) & 
+            (filtered_df['REGION'] == region)
+        ]['SENTIMENT_SCORE']
+        
+        # Get sentiment scores for all other carriers in this region
+        others_data = filtered_df[
+            (filtered_df['CARRIER'] != carrier) & 
+            (filtered_df['REGION'] == region)
+        ]['SENTIMENT_SCORE']
+        
+        # Skip if no data exists for either group
+        if len(carrier_region_data) == 0 or len(others_data) == 0:
+            continue
+            
+        carrier_score = carrier_region_data.mean()
+        others_score = others_data.mean()
         diff = carrier_score - others_score
+        
         carrier_region_diff.append({
             'CARRIER': carrier,
             'REGION': region,
