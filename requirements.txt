@@ -1,0 +1,5 @@
+python==3.11.*
+snowflake-snowpark-python
+snowflake-ml-python
+streamlit
+plotly
