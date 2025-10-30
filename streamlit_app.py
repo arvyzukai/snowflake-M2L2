@@ -133,6 +133,48 @@ fig3.update_layout(
 )
 st.plotly_chart(fig3, use_container_width=True)
 
+# --- Carrier Performance vs Others by Region ---
+st.subheader("Carrier Sentiment Score vs Others by Region")
+
+# Calculate mean sentiment for each carrier and region
+carrier_region_means = filtered_df.groupby(['CARRIER', 'REGION'])['SENTIMENT_SCORE'].mean()
+
+# Calculate the difference for each carrier vs all others within each region
+carrier_region_diff = []
+for region in filtered_df['REGION'].unique():
+    region_data = carrier_region_means.xs(region, level='REGION')
+    
+    for carrier in region_data.index:
+        carrier_score = region_data[carrier]
+        others_score = region_data[region_data.index != carrier].mean()
+        diff = carrier_score - others_score
+        carrier_region_diff.append({
+            'CARRIER': carrier,
+            'REGION': region,
+            'DIFFERENCE': diff,
+            'CARRIER_SCORE': carrier_score,
+            'OTHERS_SCORE': others_score
+        })
+
+diff_df = pd.DataFrame(carrier_region_diff)
+
+fig3 = px.bar(
+    diff_df,
+    x="CARRIER",
+    y="DIFFERENCE",
+    color="REGION",
+    barmode="group",
+    title="Carrier Sentiment Difference vs Others by Region",
+    labels={"DIFFERENCE": "Difference from Others", "CARRIER": "Carrier", "REGION": "Region"},
+)
+fig3.update_layout(
+    xaxis_title="Carrier",
+    yaxis_title="Sentiment Difference (vs Others Mean in Region)",
+    yaxis=dict(zeroline=True, zerolinewidth=2, zerolinecolor='black'),
+    legend_title="Region"
+)
+st.plotly_chart(fig3, use_container_width=True)
+
 # --- Chatbot Assistant ---
 st.subheader("Ask Questions About the Data")
 
