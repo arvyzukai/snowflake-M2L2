@@ -96,6 +96,43 @@ fig2.update_layout(
 )
 st.plotly_chart(fig2, use_container_width=True)
 
+# --- Carrier Performance vs Others ---
+st.subheader("Carrier Sentiment Score vs Others")
+
+# Calculate mean sentiment for each carrier
+carrier_means = filtered_df.groupby('CARRIER')['SENTIMENT_SCORE'].mean()
+
+# Calculate the difference for each carrier vs all others
+carrier_diff = []
+for carrier in carrier_means.index:
+    carrier_score = carrier_means[carrier]
+    others_score = carrier_means[carrier_means.index != carrier].mean()
+    diff = carrier_score - others_score
+    carrier_diff.append({
+        'CARRIER': carrier,
+        'DIFFERENCE': diff,
+        'CARRIER_SCORE': carrier_score,
+        'OTHERS_SCORE': others_score
+    })
+
+diff_df = pd.DataFrame(carrier_diff).sort_values('DIFFERENCE', ascending=True)
+
+fig3 = px.bar(
+    diff_df,
+    x="CARRIER",
+    y="DIFFERENCE",
+    title="Carrier Sentiment Difference vs All Others",
+    labels={"DIFFERENCE": "Difference from Others", "CARRIER": "Carrier"},
+    color="DIFFERENCE",
+    color_continuous_scale=["red", "yellow", "green"]
+)
+fig3.update_layout(
+    xaxis_title="Carrier",
+    yaxis_title="Sentiment Difference (vs Others Mean)",
+    yaxis=dict(zeroline=True, zerolinewidth=2, zerolinecolor='black')
+)
+st.plotly_chart(fig3, use_container_width=True)
+
 # --- Chatbot Assistant ---
 st.subheader("Ask Questions About the Data")
 
