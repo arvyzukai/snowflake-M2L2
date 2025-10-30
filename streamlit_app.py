@@ -191,14 +191,22 @@ st.plotly_chart(fig3, use_container_width=True)
 # --- Chatbot Assistant ---
 st.subheader("Ask Questions About the Data")
 
+@st.cache_data
+def get_llm_response(question, _df, _session):
+    """
+    Get LLM response for a given question about the dataset.
+    _df and _session are prefixed with underscore to prevent hashing.
+    """
+    df_string = _df.to_string(index=False)
+    response = complete(
+        model="claude-3-5-sonnet",
+        prompt=f"Answer this question using the dataset: {question} <context>{df_string}</context>",
+        session=_session
+    )
+    return response
+
 user_question = st.text_input("Enter your question here:")
 
 if user_question:
-    # Convert the DataFrame to string context for the LLM
-    df_string = df.to_string(index=False)
-    response = complete(
-        model="claude-3-5-sonnet",
-        prompt=f"Answer this question using the dataset: {user_question} <context>{df_string}</context>",
-        session=session
-    )
+    response = get_llm_response(user_question, df, session)
     st.write(response)
