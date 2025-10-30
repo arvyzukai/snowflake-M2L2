@@ -3,9 +3,23 @@ import pandas as pd
 import plotly.express as px
 from snowflake.cortex import complete
 from snowflake.snowpark.context import get_active_session
+from snowflake.snowpark import Session
 
-# Get the active Snowflake session
-session = get_active_session()
+# Create Snowflake connection
+@st.cache_resource
+def get_snowflake_session():
+    connection_parameters = {
+        "account": st.secrets["snowflake"]["account"],
+        "user": st.secrets["snowflake"]["user"],
+        "password": st.secrets["snowflake"]["password"],
+        "role": st.secrets["snowflake"]["role"],
+        "warehouse": st.secrets["snowflake"]["warehouse"],
+        "database": st.secrets["snowflake"]["database"],
+        "schema": st.secrets["snowflake"]["schema"]
+    }
+    return Session.builder.configs(connection_parameters).create()
+
+session = get_snowflake_session()
 
 # Load data
 df = session.table("reviews_sentiment_big").to_pandas()
