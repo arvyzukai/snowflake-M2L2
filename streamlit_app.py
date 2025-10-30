@@ -136,12 +136,6 @@ st.plotly_chart(fig3, use_container_width=True)
 # --- Carrier Performance vs Others by Region ---
 st.subheader("Carrier Sentiment Score vs Others by Region")
 
-# Calculate mean sentiment for each carrier and region
-carrier_region_means = filtered_df.groupby(['CARRIER', 'REGION'])['SENTIMENT_SCORE'].mean()
-
-# --- Carrier Performance vs Others by Region ---
-st.subheader("Carrier Sentiment Score vs Others by Region")
-
 # Calculate the difference for each carrier-region vs all others
 carrier_region_diff = []
 
