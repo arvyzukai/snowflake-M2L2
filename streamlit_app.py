@@ -71,6 +71,31 @@ grouped_issues = (
 )
 st.dataframe(grouped_issues)
 
+# --- Sentiment Score by Carrier and Region ---
+st.subheader("Average Sentiment Score by Carrier and Region")
+
+carrier_region_sentiment = (
+    filtered_df.groupby(['CARRIER', 'REGION'])['SENTIMENT_SCORE']
+    .mean()
+    .reset_index()
+)
+
+fig2 = px.bar(
+    carrier_region_sentiment,
+    x="CARRIER",
+    y="SENTIMENT_SCORE",
+    color="REGION",
+    barmode="group",
+    title="Average Sentiment Score by Carrier and Region",
+    labels={"SENTIMENT_SCORE": "Mean Sentiment Score", "CARRIER": "Carrier", "REGION": "Region"},
+)
+fig2.update_layout(
+    xaxis_title="Carrier", 
+    yaxis_title="Mean Sentiment Score",
+    legend_title="Region"
+)
+st.plotly_chart(fig2, use_container_width=True)
+
 # --- Chatbot Assistant ---
 st.subheader("Ask Questions About the Data")
 
