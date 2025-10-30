@@ -9,13 +9,13 @@ from snowflake.snowpark import Session
 @st.cache_resource
 def get_snowflake_session():
     connection_parameters = {
-        "account": st.secrets["connections.snowflake"]["account"],
-        "user": st.secrets["connections.snowflake"]["user"],
-        "password": st.secrets["connections.snowflake"]["password"],
-        "role": st.secrets["connections.snowflake"]["role"],
-        "warehouse": st.secrets["connections.snowflake"]["warehouse"],
-        "database": st.secrets["connections.snowflake"]["database"],
-        "schema": st.secrets["connections.snowflake"]["schema"]
+        "account": st.secrets["snowflake"]["account"],
+        "user": st.secrets["snowflake"]["user"],
+        "password": st.secrets["snowflake"]["password"],
+        "role": st.secrets["snowflake"]["role"],
+        "warehouse": st.secrets["snowflake"]["warehouse"],
+        "database": st.secrets["snowflake"]["database"],
+        "schema": st.secrets["snowflake"]["schema"]
     }
     return Session.builder.configs(connection_parameters).create()
 
